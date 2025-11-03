@@ -1,0 +1,9 @@
+{
+  "appType": "node",
+  "buildCommand": "npm install && npx prisma generate && npm run build",
+  "startCommand": "node server.js",
+  "restartCommand": "",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
