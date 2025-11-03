@@ -1,0 +1,26 @@
+# Local Git Configuration untuk JelantahGO
+# Copy isi ini ke ~/.gitconfig atau jalankan perintah di bawah
+
+[alias]
+    # Safe push - hanya push ke branch saat ini
+    spush = push
+    
+    # Check current branch
+    cb = branch --show-current
+    
+    # Safe commit & push ke develop
+    safe = !git add . && git commit -m "$1" && git push
+    
+    # Switch ke develop
+    dev = checkout develop
+    
+    # Status dengan branch info
+    st = status
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[init]
+    defaultBranch = develop
+
