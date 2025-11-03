@@ -124,9 +124,6 @@ export default function BillingPage() {
     setIsDetailDialogOpen(true);
   };
 
-  const [availableOrders, setAvailableOrders] = useState<any[]>([]);
-  const [isSelectOrderDialogOpen, setIsSelectOrderDialogOpen] = useState(false);
-
   const fetchAvailableOrders = async () => {
     setIsLoadingOrders(true);
     try {

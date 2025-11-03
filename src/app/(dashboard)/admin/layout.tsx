@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth-export";
 import { Navbar } from "@/components/dashboard/navbar";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { LayoutDashboard, Package, Users, CreditCard, Settings, Zap } from "lucide-react";

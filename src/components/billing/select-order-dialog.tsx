@@ -40,7 +40,7 @@ export function SelectOrderDialog({
         <DialogHeader>
           <DialogTitle>Select Order to Generate Billing</DialogTitle>
           <DialogDescription>
-            Choose a completed order that hasn't been billed yet.
+            Choose a completed order that hasn&apos;t been billed yet.
           </DialogDescription>
         </DialogHeader>
 

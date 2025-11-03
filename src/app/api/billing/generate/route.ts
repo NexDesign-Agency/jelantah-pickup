@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth-export";
 import { generateBilling } from "@/lib/billing";
 import { z } from "zod";
 

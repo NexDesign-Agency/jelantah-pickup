@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth-export";
 import { z } from "zod";
 import { BillingStatus } from "@prisma/client";
 import { sendPaymentReceivedEmail } from "@/lib/email";
@@ -35,6 +35,7 @@ export async function PATCH(
                 id: true,
                 name: true,
                 email: true,
+                phone: true,
                 referredBy: {
                   select: {
                     id: true,

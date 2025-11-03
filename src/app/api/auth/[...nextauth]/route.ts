@@ -7,6 +7,3 @@ const handler = NextAuth(authOptions);
 export const GET = handler.handlers.GET;
 export const POST = handler.handlers.POST;
 
-// Export auth function for server-side usage
-export const auth = handler.auth;
-
