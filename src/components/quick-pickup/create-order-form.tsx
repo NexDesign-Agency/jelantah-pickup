@@ -21,10 +21,7 @@ const createOrderSchema = z.object({
   pickupDate: z.string().optional(),
 });
 
-type CreateOrderFormData = z.infer<typeof createOrderSchema> & {
-  estimatedLiters?: string;
-  pickupDate?: string;
-};
+type CreateOrderFormData = z.infer<typeof createOrderSchema>;
 
 interface CreateOrderFormProps {
   customer: any;

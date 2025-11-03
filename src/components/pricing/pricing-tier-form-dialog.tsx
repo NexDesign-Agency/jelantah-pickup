@@ -21,7 +21,7 @@ const pricingTierSchema = z.object({
   minLiters: z.number().min(0, "Minimum liters must be 0 or greater"),
   maxLiters: z.number().nullable().optional(),
   pricePerLiter: z.number().positive("Price per liter must be positive"),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type PricingTierFormData = z.infer<typeof pricingTierSchema>;

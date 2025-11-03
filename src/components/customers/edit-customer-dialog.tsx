@@ -23,17 +23,14 @@ const editCustomerSchema = z.object({
   address: z.string().optional(),
   district: z.string().optional(),
   city: z.string().optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: z.union([z.number().min(-90).max(90), z.string()]).optional(),
+  longitude: z.union([z.number().min(-180).max(180), z.string()]).optional(),
   bankName: z.string().optional(),
   bankAccount: z.string().optional(),
   bankHolder: z.string().optional(),
 });
 
-type EditCustomerFormData = z.infer<typeof editCustomerSchema> & {
-  latitude?: string;
-  longitude?: string;
-};
+type EditCustomerFormData = z.infer<typeof editCustomerSchema>;
 
 interface EditCustomerDialogProps {
   customerId: string;
@@ -125,10 +122,10 @@ export function EditCustomerDialog({
       };
 
       if (data.latitude) {
-        payload.latitude = parseFloat(data.latitude);
+        payload.latitude = typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude;
       }
       if (data.longitude) {
-        payload.longitude = parseFloat(data.longitude);
+        payload.longitude = typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude;
       }
 
       const response = await fetch(`/api/customers/${customerId}`, {

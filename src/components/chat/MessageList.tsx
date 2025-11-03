@@ -54,8 +54,9 @@ export function MessageList({
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.target.dataset.messageId) {
-            onMessageVisible(entry.target.dataset.messageId);
+          const target = entry.target as HTMLElement;
+          if (entry.isIntersecting && target.dataset.messageId) {
+            onMessageVisible(target.dataset.messageId);
           }
         });
       },

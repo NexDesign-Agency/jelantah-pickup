@@ -1,10 +1,10 @@
-import { NextAuthOptions } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const user = await prisma.user.findUnique({
-            where: { phone: credentials.phone },
+            where: { phone: credentials.phone as string },
           });
 
           if (!user) {
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const isPasswordValid = await bcrypt.compare(
-            credentials.password,
+            credentials.password as string,
             user.password
           );
 
@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
             user: {
               id: "",
               name: "",
-              email: null,
+              email: undefined as string | undefined,
               phone: "",
               role: "CUSTOMER" as UserRole,
             },
@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
           session.user = {
             id: "",
             name: "",
-            email: null,
+            email: undefined,
             phone: "",
             role: "CUSTOMER" as UserRole,
           };
@@ -101,7 +101,7 @@ export const authOptions: NextAuthOptions = {
           user: {
             id: token?.id as string || "",
             name: "",
-            email: null,
+            email: undefined,
             phone: token?.phone as string || "",
             role: (token?.role as UserRole) || "CUSTOMER",
           },
@@ -116,5 +116,5 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
-} satisfies NextAuthOptions;
+};
 
