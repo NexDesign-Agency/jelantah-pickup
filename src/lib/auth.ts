@@ -69,7 +69,7 @@ export const authOptions: NextAuthConfig = {
             user: {
               id: "",
               name: "",
-              email: undefined as string | undefined,
+              email: null,
               phone: "",
               role: "CUSTOMER" as UserRole,
             },
@@ -81,7 +81,7 @@ export const authOptions: NextAuthConfig = {
           session.user = {
             id: "",
             name: "",
-            email: undefined,
+            email: null,
             phone: "",
             role: "CUSTOMER" as UserRole,
           };
@@ -101,7 +101,7 @@ export const authOptions: NextAuthConfig = {
           user: {
             id: token?.id as string || "",
             name: "",
-            email: undefined,
+            email: null,
             phone: token?.phone as string || "",
             role: (token?.role as UserRole) || "CUSTOMER",
           },
