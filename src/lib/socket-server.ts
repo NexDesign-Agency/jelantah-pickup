@@ -50,8 +50,9 @@ export function initSocketIO(httpServer: HTTPServer | HTTPSServer): SocketIOServ
     });
 
     // Setup tracking and chat events
-    setupTrackingEvents(socket, io);
-    setupChatEvents(socket, io);
+    // io is guaranteed to be non-null here since we just initialized it above
+    setupTrackingEvents(socket, io!);
+    setupChatEvents(socket, io!);
   });
 
   return io;
