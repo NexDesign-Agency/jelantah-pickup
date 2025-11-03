@@ -17,7 +17,7 @@ function getTransporter(): nodemailer.Transporter {
   if (!smtpUser || !smtpPass) {
     console.warn("⚠️ SMTP credentials not configured. Email sending will be disabled.");
     // Create a dummy transporter that won't actually send emails
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
       secure: false,
@@ -29,7 +29,7 @@ function getTransporter(): nodemailer.Transporter {
     return transporter;
   }
 
-  transporter = nodemailer.createTransporter({
+  transporter = nodemailer.createTransport({
     host: smtpHost,
     port: smtpPort,
     secure: smtpPort === 465,
