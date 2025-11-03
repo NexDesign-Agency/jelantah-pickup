@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  COURIER
+  WAREHOUSE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BillingStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  email     String?  @unique
+  password  String
+  role      UserRole @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Customer-specific fields
+  address     String?
+  district    String?
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  bankName    String?
+  bankAccount String?
+  bankHolder  String?
+
+  // Referral system
+  referredById String?
+  referredBy   User?    @relation("UserReferrals", fields: [referredById], references: [id])
+  referredUsers User[]  @relation("UserReferrals")
+
+  // Relations
+  ordersAsCustomer Order[] @relation("OrderCustomer")
+  ordersAsCourier  Order[] @relation("OrderCourier")
+  notifications    Notification[]
+  courierLocations CourierLocation[] @relation("CourierLocations")
+  chatMessages     ChatMessage[] @relation("ChatMessages")
+
+  @@index([phone])
+  @@index([email])
+  @@index([role])
+  @@index([referredById])
+  @@map("users")
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  orderNumber    String      @unique
+  customerId     String
+  courierId      String?
+  status         OrderStatus @default(PENDING)
+  estimatedLiters Float?
+  actualLiters   Float?
+
+  // Location
+  address        String
+  district       String
+  city           String
+  latitude       Float
+  longitude      Float
+
+  // Dates
+  pickupDate     DateTime?
+  completedDate  DateTime?
+
+  // Photo
+  pickupPhotoUrl String?
+
+  // Billing amounts
+  customerAmount Decimal?    @db.Decimal(10, 2)
+  courierFee     Decimal?    @db.Decimal(10, 2)
+  affiliateFee   Decimal?    @db.Decimal(10, 2)
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  customer       User        @relation("OrderCustomer", fields: [customerId], references: [id], onDelete: Cascade)
+  courier        User?       @relation("OrderCourier", fields: [courierId], references: [id])
+  billing        Billing?
+  courierLocations CourierLocation[]
+  chatMessages   ChatMessage[]
+
+  @@index([customerId])
+  @@index([courierId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([pickupDate])
+  @@map("orders")
+}
+
+model Billing {
+  id              String        @id @default(uuid())
+  billNumber      String        @unique
+  orderId         String        @unique
+  totalLiters     Float
+  pricePerLiter   Decimal       @db.Decimal(10, 2)
+  fees            Decimal?      @db.Decimal(10, 2)
+  status          BillingStatus @default(PENDING)
+  paymentProofUrl String?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([billNumber])
+  @@index([status])
+  @@index([paidAt])
+  @@map("billings")
+}
+
+model PricingTier {
+  id            String   @id @default(uuid())
+  minLiters      Float
+  maxLiters      Float?
+  pricePerLiter  Decimal  @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([minLiters, maxLiters])
+  @@map("pricing_tiers")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String?  // e.g., "order_update", "payment", "system"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model Settings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  category  String?  // e.g., "general", "pricing", "system"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
+  @@map("settings")
+}
+
+model CourierLocation {
+  id          String   @id @default(uuid())
+  orderId     String
+  courierId   String
+  latitude    Float
+  longitude   Float
+  accuracy    Float?
+  speed       Float?
+  heading     Float?
+  batteryLevel Float?
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  // Relations
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courier     User     @relation("CourierLocations", fields: [courierId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([courierId])
+  @@index([timestamp])
+  @@map("courier_locations")
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  orderId     String
+  senderId    String
+  message     String   @db.Text
+  messageType String   @default("text") // text, image, file
+  fileUrl     String?
+  fileName    String?
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender      User     @relation("ChatMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@index([isRead])
+  @@map("chat_messages")
+}
