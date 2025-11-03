@@ -70,9 +70,10 @@ export const authOptions: NextAuthConfig = {
               id: "",
               name: "",
               email: null,
+              emailVerified: null,
               phone: "",
               role: "CUSTOMER" as UserRole,
-            },
+            } as any,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           };
         }
@@ -82,9 +83,10 @@ export const authOptions: NextAuthConfig = {
             id: "",
             name: "",
             email: null,
+            emailVerified: null,
             phone: "",
             role: "CUSTOMER" as UserRole,
-          };
+          } as any;
         }
 
         if (token) {
@@ -102,9 +104,10 @@ export const authOptions: NextAuthConfig = {
             id: token?.id as string || "",
             name: "",
             email: null,
+            emailVerified: null,
             phone: token?.phone as string || "",
             role: (token?.role as UserRole) || "CUSTOMER",
-          },
+          } as any,
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         };
       }
